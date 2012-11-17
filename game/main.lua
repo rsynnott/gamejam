@@ -3,6 +3,7 @@ local tree = require 'lib/tree'
 local gamestate = require 'lib/gamestate'
 local menu = require 'lib/menu'
 local brd = require 'lib/brd'
+local overlay = require 'lib/overlay'
 
 function love.load()
 	tree.load()
@@ -14,6 +15,7 @@ function love.draw()
 	--thing.bla()
 	brd.draw()
 	menu.draw()
+	overlay.draw()
 
 end
 

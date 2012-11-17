@@ -32,6 +32,10 @@ function M.lose_egg()
 	state.brds_removed = state.brds_removed + 1
 end
 
+function M.get_eggs_remaining()
+	return state.eggs_remaining
+end
+
 function M.kill_brd()
 	state.brds_killed = state.brds_killed + 1
 end

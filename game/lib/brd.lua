@@ -10,7 +10,7 @@ local state = "not_loaded"
 local level_data = nil
 local pause_timer = 0
 
-local brd_defs = {{main_frames=3, frame_time=0.5, velocity = 10, accel = 2, pause = 0.5, pause_frame = "smallbird4.png", frame_names={"smallbird1.png", "smallbird2.png", "smallbird3.png"}}}
+local brd_defs = {{main_frames=3, frame_time=0.5, velocity = 2, accel = 2, pause = 0.1, pause_frame = "smallbird4.png", frame_names={"smallbird1.png", "smallbird2.png", "smallbird3.png"}}}
 
 function M.level_setup()
 	print("IS THE WRD")
@@ -40,11 +40,11 @@ end
 function M.draw()
 	for k, v in ipairs(gamestate.get_brds()) do
 		if not v.gone then
-			print(string.format("Will draw %s", k))
+			--print(string.format("Will draw %s", k))
 			if v.pause_timer < v.definition.pause then 
 				love.graphics.draw(v.definition.pause_image, v.position[1], v.position[2], 0, 1, 1, 0, 0)
 			else
-				love.graphics.draw(v.definition.images[v.frame+1], v.position[1], v.position[2], 0, 1, 1, 0, 0)
+				love.graphics.draw(v.definition.images[v.frame+1], v.position[1], v.position[2] + v.displacement, 0, 1, 1, 0, 0)
 			end
 		end
 	end
@@ -74,7 +74,10 @@ function M.update(dt)
 			definition = brd_defs[1],
 			velocity = 0,
 			path_pos = 1,
-			pause_timer = 0
+			rising = true,
+			displacement=0,
+			pause_timer = 0,
+			max_velocity_point = 0, 
 		}
 		gamestate.add_brd(brd_ctr, new_brd)
 		brd_ctr = brd_ctr + 1
@@ -92,20 +95,46 @@ function M.update(dt)
 					v.frame = (v.frame + 1) % def.main_frames
 				end
 
+
+				local distance_travelled = math.sqrt((v.position[1]-level_data.path[v.path_pos][1])*(v.position[1]-level_data.path[v.path_pos][1]) +
+					(v.position[2]-level_data.path[v.path_pos][2])*(v.position[2]-level_data.path[v.path_pos][2]))
+
+				print(string.format("%d %d", v.velocity, def.velocity))
 				if v.velocity < def.velocity then
 					v.velocity = v.velocity + (def.accel*dt)
+					v.max_velocity_point = distance_travelled
 				end
 				local xdiff = level_data.path[v.path_pos+1][1] - level_data.path[v.path_pos][1]
 				local ydiff = level_data.path[v.path_pos+1][2] - level_data.path[v.path_pos][2]
-				print(xdiff)
-				print(ydiff)
+				--print(xdiff)
+				--print(ydiff)
 				local distance = math.sqrt(xdiff*xdiff + ydiff*ydiff)
+				print(string.format("%d %d %d", distance, distance_travelled, v.max_velocity_point))
+				if distance - distance_travelled < v.max_velocity_point then
+					print("Slowing!")
+					v.velocity = math.max(v.velocity-(def.accel*dt), 1)
+				end
+
+				if v.rising then
+					v.displacement = v.displacement + dt * 5
+					if v.displacement > 5 then
+						v.rising = false
+					end
+				else
+					v.displacement = v.displacement - dt * 5
+					if v.displacement < 1 then
+						v.rising = true
+					end
+				end
+
+
+
 				local scalef = v.velocity / distance
 				local scalex = xdiff * scalef
 				local scaley = ydiff * scalef
 				v.position[1] = v.position[1] + scalex
 				v.position[2] = v.position[2] + scaley
-				print(string.format("%f %f %f %f %f", v.path_pos, v.position[1], level_data.path[v.path_pos+1][1], v.position[2], level_data.path[v.path_pos+1][2]))
+				--print(string.format("%f %f %f %f %f", v.path_pos, v.position[1], level_data.path[v.path_pos+1][1], v.position[2], level_data.path[v.path_pos+1][2]))
 				if ((xdiff >=0 and v.position[1] >= level_data.path[v.path_pos+1][1]) or (xdiff <=0 and v.position[1] <= level_data.path[v.path_pos+1][1])) and
 					((ydiff >=0 and v.position[2] >= level_data.path[v.path_pos+1][2]) or (ydiff <=0 and v.position[2] <= level_data.path[v.path_pos+1][2])) then
 					print("AT END POINT")
@@ -117,7 +146,7 @@ function M.update(dt)
 				if v.path_pos >= #level_data.path then 
 					gamestate.lose_egg()
 					gamestate.remove_brd(k)
-					
+
 				end
 			end
 		end
