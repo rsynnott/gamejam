@@ -12,13 +12,18 @@ local state = {
 	brds_killed = 0,
 	brds_scared = 0,
 	eggs_remaining = nil,
-	gone = false
+	gone = false,
+	balance = 50
 }
 
 
 
 function M.in_game()
 	return state.system_state == "playing"
+end
+
+function M.get_state()
+	return state.system_state
 end
 
 function M.in_menu()
@@ -44,6 +49,14 @@ function M.scare_brd()
 	state.brds_scared = state.brds_scared + 1
 end
 
+function M.birds_scared()
+	return state.brds_scared
+end
+
+function M.birds_killed()
+	return state.brds_killed
+end
+
 function M.get_level_data()
 	return state.level_data
 end
@@ -60,6 +73,14 @@ function M.get_brds()
 	return state.brds
 end
 
+function M.get_balance()
+	return state.balance
+end
+
+function M.modify_balance(delta)
+	state.balance = state.balance + delta
+end 
+
 function M.start_game()
 	print("Start")
 	state.level = 1
@@ -72,6 +93,12 @@ function M.start_game()
 end
 
 function M.update(dt)
+	if not state.level_data then
+		return
+	end
+	if state.eggs_remaining < 1 or (state.brds_scared + state.brds_killed) >= state.level_data.brds then
+		state.system_state = "gameover"
+	end
 end
 
 return M

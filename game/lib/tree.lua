@@ -12,7 +12,7 @@ local colors = {{139, 69, 19, 255}, {205, 133, 63, 255}}
 
 local sway_time = 0
 local sway_total_time = 1
-local sway_factor = 10
+local sway_factor = 30
 
 function M.level_setup()
 	-- Load in the level level_data
@@ -24,6 +24,9 @@ local mouse_y = 0
 
 
 function M.draw()
+	if gamestate.get_state() == "gameover" then
+		return
+	end
 	if level_data then
 		for i,v in ipairs(level_data.tree) do
 			--print(v)

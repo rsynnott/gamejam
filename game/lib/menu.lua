@@ -11,17 +11,30 @@ function M.draw()
 	if not gamestate.in_menu() then
 		return
 	end
-	love.graphics.setColor(menu_elements.play_button.color)
-	love.graphics.rectangle("fill", menu_elements.play_button.x, menu_elements.play_button.y, menu_elements.play_button.w, menu_elements.play_button.h)
-	love.graphics.setColor(menu_elements.play_button.text_color)
-	love.graphics.printf("START", 
+	
+	if gamestate.get_state() == "gameover" then
+		love.graphics.setColor(menu_elements.play_button.text_color)
+		love.graphics.printf("Game over", 
 		menu_elements.play_button.x,
 		menu_elements.play_button.y + (menu_elements.play_button.h/2),
 		menu_elements.play_button.w,
 		"center")
+	else
+		love.graphics.setColor(menu_elements.play_button.color)
+	love.graphics.rectangle("fill", menu_elements.play_button.x, menu_elements.play_button.y, menu_elements.play_button.w, menu_elements.play_button.h)
+	love.graphics.setColor(menu_elements.play_button.text_color)
+		 love.graphics.printf("START", 
+		menu_elements.play_button.x,
+		menu_elements.play_button.y + (menu_elements.play_button.h/2),
+		menu_elements.play_button.w,
+		"center")
+		end
 end
 
 function M.mousepressed(x, y, button)
+	if gamestate.get_state() == "gameover" then
+		return
+	end
 	if not gamestate.in_menu() then
 		return
 	end
