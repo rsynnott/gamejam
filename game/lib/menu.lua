@@ -8,22 +8,21 @@ end
 local menu_elements = {play_button = {x = 200,y = 200,w = 200,h = 100,text = "Play",color = {0, 255, 0, 255}, text_color={255,255,255, 255}}}
 
 function M.draw()
-	if not gamestate.in_menu() then
-		return
-	end
-	
 	if gamestate.get_state() == "gameover" then
-		love.graphics.setColor(menu_elements.play_button.text_color)
+		love.graphics.setColor(0,0,0, 255)
 		love.graphics.printf("Game over", 
 		menu_elements.play_button.x,
 		menu_elements.play_button.y + (menu_elements.play_button.h/2),
 		menu_elements.play_button.w,
 		"center")
 	else
-		love.graphics.setColor(menu_elements.play_button.color)
+		if not gamestate.in_menu() then
+		return
+	end
+		love.graphics.setColor(0,0,0, 255)
 	love.graphics.rectangle("fill", menu_elements.play_button.x, menu_elements.play_button.y, menu_elements.play_button.w, menu_elements.play_button.h)
 	love.graphics.setColor(menu_elements.play_button.text_color)
-		 love.graphics.printf("START", 
+		 love.graphics.printf("START CUCKOO", 
 		menu_elements.play_button.x,
 		menu_elements.play_button.y + (menu_elements.play_button.h/2),
 		menu_elements.play_button.w,

@@ -3,7 +3,7 @@ local gamestate = require 'lib/gamestate'
 local M = {}
 
 local spawn_timer = 0
-local next_spawn = 2
+local next_spawn = 10
 local brd_ctr = 1
 
 local state = "not_loaded"
